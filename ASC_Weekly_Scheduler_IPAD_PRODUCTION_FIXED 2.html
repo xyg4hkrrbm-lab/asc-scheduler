@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>ASC Weekly Scheduler (iPad Production Fixed)</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0b1325;
+  color: #e6ecff;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  overflow: hidden;
+}
+.scheduler { padding: 12px; }
+.card {
+  background: linear-gradient(180deg,#1a2a52,#0f1b36);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.card.minimized {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
+</head>
+
+<body>
+<div class="scheduler">
+  <div class="card minimized" data-name="Montalvo" data-time="07:00">
+    <strong>Montalvo</strong> — 07:00
+    <div class="details" hidden>
+      Full card details go here
+    </div>
+  </div>
+</div>
+
+<script>
+window.__ASC_STATE__ = window.__ASC_STATE__ || {
+  longPressTimer: null,
+  longPressTriggered: false
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('pointerdown', () => {
+      window.__ASC_STATE__.longPressTriggered = false;
+      window.__ASC_STATE__.longPressTimer = setTimeout(() => {
+        window.__ASC_STATE__.longPressTriggered = true;
+        openEditor(card);
+      }, 600);
+    });
+
+    card.addEventListener('pointerup', () => {
+      clearTimeout(window.__ASC_STATE__.longPressTimer);
+      if (!window.__ASC_STATE__.longPressTriggered) {
+        toggleCard(card);
+      }
+    });
+
+    card.addEventListener('pointerleave', () => {
+      clearTimeout(window.__ASC_STATE__.longPressTimer);
+    });
+  });
+});
+
+function toggleCard(card) {
+  card.classList.toggle('minimized');
+  const details = card.querySelector('.details');
+  if (details) details.hidden = card.classList.contains('minimized');
+}
+
+function openEditor(card) {
+  alert(`Edit Card\n\nName: ${card.dataset.name}\nTime: ${card.dataset.time}`);
+}
+</script>
+</body>
+</html>
